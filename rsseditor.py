@@ -7,7 +7,7 @@ class RssEditor:
         self.feedLoader = feedLoader
 
     def renderFeed(self):
-        soup = self.feedLoader.retrieve()
+        soup = BeautifulStoneSoup(self.feedLoader.retrieve())
         entries = soup('item')
         itemStrings = []
         divTemplate = '<div class="{0}" path="[{1}].{0}.string">{2}</div>\n'
@@ -22,7 +22,7 @@ class RssEditor:
         return ''.join(itemStrings)
 
     def edit(self, path, newValue):
-        soup = self.feedLoader.retrieve()
+        soup = BeautifulStoneSoup(self.feedLoader.retrieve())
         entries = soup('item')
         wrapper = PropertyAccessor(entries)
         wrapper.setValue(path, newValue)
@@ -30,21 +30,14 @@ class RssEditor:
 
 class FeedLoader:
     def __init__(self, url):
-        self.url = url
+        page = urllib2.urlopen(url)
+        self.feedString = page.read()
 
     def retrieve(self):
-        page = urllib2.urlopen(self.url)
-        soup = BeautifulStoneSoup(page)
-        return soup
+        return self.feedString
 
     def save(self, feedString):
-        print feedString
+        self.feedString = feedString
 
 
-
-loader = FeedLoader("http://news.ycombinator.com/rss")
-editor = RssEditor(loader)
-
-print editor.renderFeed()
-editor.edit('[1].title.string', 'asdf')
 
