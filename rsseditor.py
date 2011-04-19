@@ -9,17 +9,20 @@ class RssEditor:
     def renderFeed(self):
         soup = BeautifulStoneSoup(self.feedLoader.retrieve())
         entries = soup('item')
-        itemStrings = []
-        divTemplate = '<div class="{0}" path="[{1}].{0}.string">{2}</div>\n'
+        itemList = []
+        pathTemplate = "[{0}].{1}.string"
         i = 0
         for entry in entries:
-            itemStrings.append("<div>\n")
-            itemStrings.append(divTemplate.format('title', i, entry.title.string.encode('utf8')))
-            itemStrings.append(divTemplate.format('description', i, entry.description.string))
-            itemStrings.append(divTemplate.format('link', i, entry.link.string))
-            itemStrings.append("</div>\n")
+            itemDict = {}
+            for value in ['link', 'title', 'description']:
+                itemDict[value] = {}
+                itemDict[value]['path'] = pathTemplate.format(i, value)
+            itemDict['title']['value'] = entry.title.string.encode('utf8')
+            itemDict['description']['value'] = entry.description.string
+            itemDict['link']['value'] = entry.link.string
             i += 1
-        return ''.join(itemStrings)
+            itemList.append(itemDict)
+        return itemList
 
     def edit(self, path, newValue):
         soup = BeautifulStoneSoup(self.feedLoader.retrieve())
@@ -27,17 +30,36 @@ class RssEditor:
         wrapper = PropertyAccessor(entries)
         wrapper.setValue(path, newValue)
         self.feedLoader.save(soup.prettify())
+        return self.renderFeed()
 
 class FeedLoader:
-    def __init__(self, url):
+    feeds = []
+    def __init__(self, feedKey=None):
+        self.feedKey = feedKey
+
+    def add(self, url):
         page = urllib2.urlopen(url)
-        self.feedString = page.read()
+        feedString = page.read()
+        index = len(FeedLoader.feeds)
+        FeedLoader.feeds[index:] = [feedString]
+        self.feedKey = index
+        return index
 
-    def retrieve(self):
-        return self.feedString
+    def retrieve(self,feedKey=None):
+        if(feedKey == None):
+            if(self.feedKey == None):
+                raise Exception("No feed key set when retrieving")
+            else:
+                return FeedLoader.feeds[self.feedKey]
+        else:
+            return FeedLoader.feeds[feedKey]
 
-    def save(self, feedString):
-        self.feedString = feedString
-
-
+    def save(self, feedString, feedKey=None):
+        if(feedKey == None):
+            if(self.feedKey == None):
+                raise Exception("No feed key set when saving")
+            else:
+                FeedLoader.feeds[self.feedKey] = feedString
+        else:
+            FeedLoader.feeds[feedKey] = feedString
 
