@@ -23,6 +23,9 @@
     }
     </script>
     <style type="text/css">
+        .indent {
+            margin-left:1em;
+        }
         .editable-block .form {
             display: none;
         }

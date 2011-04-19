@@ -14,12 +14,12 @@ class RssEditor:
         i = 0
         for entry in entries:
             itemDict = {}
-            for value in ['link', 'title', 'description']:
+            for value in ['title', 'description', 'link']:
                 itemDict[value] = {}
                 itemDict[value]['path'] = pathTemplate.format(i, value)
             itemDict['title']['value'] = entry.title.string.encode('utf8')
             itemDict['description']['value'] = entry.description.string
-            itemDict['link']['value'] = entry.link.string
+            itemDict['link']['value'] = '<a href="{0}">{0}</a>'.format(entry.link.string)
             i += 1
             itemList.append(itemDict)
         return itemList
