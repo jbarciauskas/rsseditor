@@ -8,6 +8,7 @@ class RssEditor:
 
     def renderFeed(self):
         soup = BeautifulStoneSoup(self.feedLoader.retrieve())
+        feedTitle = soup.channel.title.string
         entries = soup('item')
         itemList = []
         pathTemplate = "[{0}].{1}.string"
@@ -22,7 +23,7 @@ class RssEditor:
             itemDict['link']['value'] = '<a href="{0}">{0}</a>'.format(entry.link.string)
             i += 1
             itemList.append(itemDict)
-        return itemList
+        return (feedTitle, itemList)
 
     def edit(self, path, newValue):
         soup = BeautifulStoneSoup(self.feedLoader.retrieve())

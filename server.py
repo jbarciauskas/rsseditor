@@ -22,8 +22,8 @@ def loadFeed():
     feedLoader = FeedLoader()
     index = feedLoader.add(feedUrl)
     editor = RssEditor(feedLoader)
-    feedItems = editor.renderFeed()
-    return template('feed', itemList=feedItems, feedKey=index)
+    (feedTitle, feedItems) = editor.renderFeed()
+    return template('feed', title=feedTitle, itemList=feedItems, feedKey=index)
 
 @app.post('/editFeedValue/:index')
 def editFeedValue(index):
@@ -33,7 +33,7 @@ def editFeedValue(index):
     editor = RssEditor(feedLoader)
     for key in request.forms:
         editor.edit(key, request.forms[key])
-    feedItems = editor.renderFeed()
-    return template('feed', itemList=feedItems, feedKey=index)
+    (feedTitle, feedItems) = editor.renderFeed()
+    return template('feed', title=feedTitle, itemList=feedItems, feedKey=index)
 
 run(app, host='localhost', port=8080)
