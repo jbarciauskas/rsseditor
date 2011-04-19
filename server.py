@@ -25,14 +25,15 @@ def loadFeed():
     feedItems = editor.renderFeed()
     return template('feed', itemList=feedItems, feedKey=index)
 
-@app.post('/editFeedValue/:feedKey')
-def editFeedValue(feedKey):
+@app.post('/editFeedValue/:index')
+def editFeedValue(index):
     path = request.forms.get('path')
     value = request.forms.get('value')
-    feedLoader = FeedLoader(int(feedKey))
+    feedLoader = FeedLoader(int(index))
     editor = RssEditor(feedLoader)
     for key in request.forms:
         editor.edit(key, request.forms[key])
-    return "Success"
+    feedItems = editor.renderFeed()
+    return template('feed', itemList=feedItems, feedKey=index)
 
 run(app, host='localhost', port=8080)

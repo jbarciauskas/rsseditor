@@ -11,13 +11,16 @@
             var jqxhr = $
                             .post("loadFeed", $("#loadFeedForm").serialize())
                             .success(function(data) {
-                                $( "#currentFeed" ).html(data);
-                                $(function(){
-                                    $('.editable-block').inlineEdit({href: 'editFeedValue', hover: 'hover'});
-                                });
+                                renderResponse(data);
                             });
         });
     });
+    function renderResponse(response) {
+        $( "#currentFeed" ).html(response);
+        $('.editable-block').inlineEdit({
+            success: renderResponse,
+            hover: 'hover'});
+    }
     </script>
     <style type="text/css">
         .editable-block .form {

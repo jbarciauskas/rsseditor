@@ -24,7 +24,8 @@
 					hover: undefined,
 					postVar: 'text',
 					postData: {},
-					postFormat: undefined
+					postFormat: undefined,
+                    success: undefined
 				}, options || {}, $.metadata ? $main.metadata() : {} ),
 
 				// Cache All Selectors
@@ -115,7 +116,12 @@
 							return;
 						}
 
-						$display.html( response );
+                        if(!settings.success) {
+                            $display.html( response );
+                        }
+                        else {
+                            settings.success(response);
+                        }
 					}
 				});
 

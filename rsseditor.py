@@ -29,7 +29,7 @@ class RssEditor:
         entries = soup('item')
         wrapper = PropertyAccessor(entries)
         wrapper.setValue(path, newValue)
-        self.feedLoader.save(soup.prettify())
+        self.feedLoader.save(str(soup))
         return self.renderFeed()
 
 class FeedLoader:
@@ -40,8 +40,9 @@ class FeedLoader:
     def add(self, url):
         page = urllib2.urlopen(url)
         feedString = page.read()
+        soup = BeautifulStoneSoup(feedString)
         index = len(FeedLoader.feeds)
-        FeedLoader.feeds[index:] = [feedString]
+        FeedLoader.feeds[index:] = [str(soup)]
         self.feedKey = index
         return index
 
